@@ -39,7 +39,9 @@ public class ControlJuego : MonoBehaviour
         botonDerecha = GameObject.Find("BotonDerecha");
         marcador = GameObject.Find("Marcador");
 
+        izquierda = random.Next(imagenes.Length);
         nuevaImagen(botonIzquierda, izquierda);
+        derecha = random.Next(imagenes.Length);
         nuevaImagen(botonDerecha, derecha);
     }
 
