@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using Firebase;
+using Firebase.Firestore;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +17,8 @@ public class ControlJuego : MonoBehaviour
 
     private int izquierda = 30;
     private int derecha = 40;
+
+    private FirebaseFirestore db;
 
     private String[] imagenes =
     {
@@ -35,6 +40,9 @@ public class ControlJuego : MonoBehaviour
 
     void Start()
     {
+        // Conexión a Firestore
+        db = FirebaseFirestore.GetInstance(FirebaseApp.DefaultInstance);
+
         botonIzquierda = GameObject.Find("BotonIzquierda");
         botonDerecha = GameObject.Find("BotonDerecha");
         marcador = GameObject.Find("Marcador");
@@ -43,6 +51,35 @@ public class ControlJuego : MonoBehaviour
         nuevaImagen(botonIzquierda, izquierda);
         derecha = random.Next(imagenes.Length);
         nuevaImagen(botonDerecha, derecha);
+
+        // Crear los documentos vacíos
+        foreach (var nombre in nombres)
+        {
+            DocumentReference docRef = db.Collection("animals").Document(nombre.ToLower());
+
+            var datos = new Dictionary<string, object>
+            {
+            };
+
+            docRef.SetAsync(datos);
+        }
+
+        // Observar una colección
+        CollectionReference animalsRef = db.Collection("animals");
+        Query query = animalsRef.OrderByDescending("count");
+
+        ListenerRegistration listener = query.Listen(snapshot =>
+        {
+            String top10 = "Top 10\n\n";
+
+            foreach (DocumentSnapshot documentSnapshot in snapshot.Documents)
+            {
+                Dictionary<string, object> animal = documentSnapshot.ToDictionary();
+                top10 += $"{documentSnapshot.Id} ({animal["count"]})\n";
+            }
+
+            marcador.GetComponent<TMP_Text>().text = top10;
+        });
     }
 
     private void nuevaImagen(GameObject boton, int posicion)
@@ -58,7 +95,8 @@ public class ControlJuego : MonoBehaviour
 
     public void botonIzquierdoPulsado()
     {
-        actualizarMarcador(nombres[izquierda].ToLower());
+        DocumentReference docRef = db.Collection("animals").Document(nombres[izquierda].ToLower());
+        docRef.UpdateAsync("count", FieldValue.Increment(1));
 
         izquierda = random.Next(imagenes.Length);
         nuevaImagen(botonIzquierda, izquierda);
@@ -66,7 +104,8 @@ public class ControlJuego : MonoBehaviour
 
     public void botonDerechoPulsado()
     {
-        actualizarMarcador(nombres[derecha].ToLower());
+        DocumentReference docRef = db.Collection("animals").Document(nombres[derecha].ToLower());
+        docRef.UpdateAsync("count", FieldValue.Increment(1));
 
         derecha = random.Next(imagenes.Length);
         nuevaImagen(botonDerecha, derecha);
