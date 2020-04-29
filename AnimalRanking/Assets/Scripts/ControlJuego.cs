@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Firebase;
 using Firebase.Firestore;
@@ -66,7 +66,7 @@ public class ControlJuego : MonoBehaviour
 
         // Observar una colección
         CollectionReference animalsRef = db.Collection("animals");
-        Query query = animalsRef.OrderByDescending("count");
+        Query query = animalsRef.Limit(10).OrderByDescending("count");
 
         ListenerRegistration listener = query.Listen(snapshot =>
         {
