@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Firebase;
 using Firebase.Firestore;
@@ -61,7 +61,7 @@ public class ControlJuego : MonoBehaviour
             {
             };
 
-            docRef.SetAsync(datos);
+            docRef.SetAsync(datos, SetOptions.MergeAll);
         }
 
         // Observar una colección
