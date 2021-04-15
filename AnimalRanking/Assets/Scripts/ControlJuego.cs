@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Firebase;
 using Firebase.Firestore;
 using TMPro;
 using UnityEngine;
@@ -41,7 +40,7 @@ public class ControlJuego : MonoBehaviour
     void Start()
     {
         // Conexión a Firestore
-        db = FirebaseFirestore.GetInstance(FirebaseApp.DefaultInstance);
+        db = FirebaseFirestore.DefaultInstance;
 
         botonIzquierda = GameObject.Find("BotonIzquierda");
         botonDerecha = GameObject.Find("BotonDerecha");
